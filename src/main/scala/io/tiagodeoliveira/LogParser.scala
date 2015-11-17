@@ -8,12 +8,12 @@ import scala.io.Source
   */
 class LogParser {
 
-  case class Game(id: Long, var kills: Int)
+  case class Game(id: Int, var kills: Int)
 
   def parseFile(filename: String): ArrayBuffer[Game] = {
 
     val games: ArrayBuffer[Game] = new ArrayBuffer[Game]
-    var gameId: Long = 0
+    var gameId: Int = 0
 
     for (line <- Source.fromFile(filename).getLines()) {
       if (isANewGame(line)) {
