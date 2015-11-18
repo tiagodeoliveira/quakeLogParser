@@ -34,8 +34,21 @@ class LogParserSpec extends FunSuite with BeforeAndAfter {
     val result = logParser.parseFile(logFileName)
     result.foreach { game =>
       if (expectedGamesKillCounts contains game.id) {
-        assertResult(expectedGamesKillCounts(game.id))(game.kills)
+        assertResult(expectedGamesKillCounts(game.id))(game.killCount)
       }
     }
   }
+
+  test("return the correct amount of game kills history") {
+    val expectedGamesAmount = 131
+
+    val result = logParser.parseFile(logFileName)
+    assertResult(expectedGamesAmount)(result.last.killHistory.size)
+  }
+
+  test("return the correct game kills history for a given game") {
+    val result = logParser.parseFile(logFileName)
+    assertResult(new Kill("Dono da Bola", "Isgalamido", "MOD_ROCKET"))(result.last.killHistory.head)
+  }
+
 }

@@ -6,9 +6,12 @@ import scala.io.Source
 /**
   * Created by tiagooliveira on 11/17/15.
   */
+
+case class Kill(killer: String, killed: String, weapon: String)
+case class Game(id: Int, var killCount: Int, killHistory: ArrayBuffer[Kill])
+
 class LogParser {
 
-  case class Game(id: Int, var kills: Int)
 
   def parseFile(filename: String): ArrayBuffer[Game] = {
 
@@ -18,9 +21,10 @@ class LogParser {
     for (line <- Source.fromFile(filename).getLines()) {
       if (isANewGame(line)) {
         gameId += 1
-        games += new Game(gameId, 0)
+        games += new Game(gameId, 0, new ArrayBuffer[Kill]())
       } else if (isAKill(line)) {
-        games.last.kills += 1
+        games.last.killCount += 1
+        games.last.killHistory += getKillInfo(line)
       }
     }
 
@@ -34,4 +38,10 @@ class LogParser {
   private def isAKill(line: String): Boolean = {
     line.contains("Kill:")
   }
+
+  private def getKillInfo(line: String): Kill = {
+    val KillExtractor(killer, killed, weapon) = line
+    new Kill(killer, killed, weapon)
+  }
+
 }
