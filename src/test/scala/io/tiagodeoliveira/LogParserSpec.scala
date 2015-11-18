@@ -2,8 +2,6 @@ package io.tiagodeoliveira
 
 import org.scalatest.{BeforeAndAfter, FunSuite}
 
-import scala.collection.mutable.ArrayBuffer
-
 /**
   * Created by tiagooliveira on 11/17/15.
   */
@@ -34,7 +32,7 @@ class LogParserSpec extends FunSuite with BeforeAndAfter {
     val result = logParser.parseFile(logFileName)
     result.foreach { game =>
       if (expectedGamesKillCounts contains game.id) {
-        assertResult(expectedGamesKillCounts(game.id))(game.killCount)
+        assertResult(expectedGamesKillCounts(game.id))(game.totalKills)
       }
     }
   }
@@ -43,12 +41,17 @@ class LogParserSpec extends FunSuite with BeforeAndAfter {
     val expectedGamesAmount = 131
 
     val result = logParser.parseFile(logFileName)
-    assertResult(expectedGamesAmount)(result.last.killHistory.size)
+    assertResult(expectedGamesAmount)(result.last.kills.size)
   }
 
   test("return the correct game kills history for a given game") {
     val result = logParser.parseFile(logFileName)
-    assertResult(new Kill("Dono da Bola", "Isgalamido", "MOD_ROCKET"))(result.last.killHistory.head)
+    assertResult(new Kill(new Player("Dono da Bola"), new Player("Isgalamido"), new Weapon("MOD_ROCKET")))(result.last.kills.head)
+  }
+
+  test("game list to string") {
+    val result = logParser.parseFile(logFileName)
+    assertResult("")(result.last.toString)
   }
 
 }

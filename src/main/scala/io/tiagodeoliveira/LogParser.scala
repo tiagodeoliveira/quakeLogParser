@@ -7,11 +7,7 @@ import scala.io.Source
   * Created by tiagooliveira on 11/17/15.
   */
 
-case class Kill(killer: String, killed: String, weapon: String)
-case class Game(id: Int, var killCount: Int, killHistory: ArrayBuffer[Kill])
-
 class LogParser {
-
 
   def parseFile(filename: String): ArrayBuffer[Game] = {
 
@@ -23,8 +19,10 @@ class LogParser {
         gameId += 1
         games += new Game(gameId, 0, new ArrayBuffer[Kill]())
       } else if (isAKill(line)) {
-        games.last.killCount += 1
-        games.last.killHistory += getKillInfo(line)
+        val game = games.last
+
+        game.totalKills += 1
+        game.kills += getKillInfo(line)
       }
     }
 
@@ -41,7 +39,7 @@ class LogParser {
 
   private def getKillInfo(line: String): Kill = {
     val KillExtractor(killer, killed, weapon) = line
-    new Kill(killer, killed, weapon)
+    new Kill(new Player(killer), new Player(killed), new Weapon(weapon))
   }
 
 }
