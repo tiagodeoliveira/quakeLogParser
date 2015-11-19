@@ -1,13 +1,14 @@
 package io.tiagodeoliveira
 
+import org.json4s.JsonAST.{JField, JObject}
 import org.json4s.JsonDSL._
 import org.json4s.native.JsonMethods
 
 import scala.collection.mutable.ArrayBuffer
 
 /**
- * Created by tiagooliveira on 11/18/15.
- */
+  * Created by tiagooliveira on 11/18/15.
+  */
 case class Player(name: String)
 
 case class Weapon(name: String)
@@ -19,18 +20,34 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
   private val MASTER_PLAYER = "<world>"
 
   override def toString = {
-    JsonMethods.compact(this.getGameAsJson())
+    JsonMethods.compact(JsonMethods.render(this.getGameAsJson()))
   }
 
   def simpleReport() = {
-    val jsonGame = this.getGameAsJson()
-    jsonGame.::("players")
+    val json = this.getGameAsJson()
+    JsonMethods.compact(JsonMethods.render(json.removeField {
+      _._1 == "players"
+    }))
+  }
+
+  def killsByMeanReport() = {
+
+    val killByMeans = kills.filter(_.killer != MASTER_PLAYER).map(_.weapon).groupBy(identity).mapValues(_.size)
+
+    var json: JObject =
+      (s"game_$id" ->
+        ("kills_by_means" -> killByMeans.map { mean =>
+          ((mean._1.name) -> mean._2)
+        })
+        )
+
+    JsonMethods.compact(JsonMethods.render(json))
   }
 
   private def getGameAsJson() = {
     val validKills = this.getOnlyValidKills
 
-    val json =
+    var json: JObject =
       (s"game_$id" ->
         ("total_kills" -> totalKills) ~
           ("players" -> validKills.map(_._1)) ~
@@ -39,7 +56,7 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
           })
         )
 
-    JsonMethods.render(json)
+    json
   }
 
   private def getOnlyValidKills = {

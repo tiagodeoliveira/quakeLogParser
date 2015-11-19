@@ -63,8 +63,17 @@ class LogParserSpec extends FunSpec with BeforeAndAfter {
 
   describe("Test game reports from a single match") {
     it("should return a simple game report") {
+      val expectedJsonOutput = """{"game_1":{"total_kills":131,"kills":{"Dono da Bola":2,"Assasinu Credi":3,"Oootsimo":2,"Zeh":2,"Mal":6,"Isgalamido":2}}}"""
+
       val result = logParser.parseFile(singleGameFileName)
-      result.head.simpleReport()
+      assertResult(expectedJsonOutput)(result.last.simpleReport())
+    }
+
+    it("should return a kills by mean report") {
+      val expectedJsonOutput = """{"game_1":{"kills_by_means":{"MOD_ROCKET":37,"MOD_SHOTGUN":4,"MOD_ROCKET_SPLASH":60,"MOD_RAILGUN":9,"MOD_TRIGGER_HURT":14,"MOD_MACHINEGUN":4,"MOD_FALLING":3}}}"""
+
+      val result = logParser.parseFile(singleGameFileName)
+      assertResult(expectedJsonOutput)(result.last.killsByMeanReport())
     }
   }
 }
