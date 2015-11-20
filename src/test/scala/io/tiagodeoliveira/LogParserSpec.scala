@@ -32,13 +32,6 @@ class LogParserSpec extends FunSpec with BeforeAndAfter {
       val result = logParser.parseFile(singleGameFileName)
       assertResult(new Kill(new Player("Dono da Bola"), new Player("Isgalamido"), new Weapon("MOD_ROCKET")))(result.last.kills.head)
     }
-
-    it(" should return the game as the output json") {
-      val expectedJsonOutput = """{"game_1":{"total_kills":131,"players":["Dono da Bola","Assasinu Credi","Oootsimo","Zeh","Mal","Isgalamido"],"kills":{"Dono da Bola":2,"Assasinu Credi":3,"Oootsimo":2,"Zeh":2,"Mal":6,"Isgalamido":2}}}"""
-
-      val result = logParser.parseFile(singleGameFileName)
-      assertResult(expectedJsonOutput)(result.last.toString)
-    }
   }
 
   describe("A set of tests with many games on a file") {
@@ -65,7 +58,7 @@ class LogParserSpec extends FunSpec with BeforeAndAfter {
 
   describe("Test game reports from a single match") {
     it("should return a simple game report") {
-      val expectedJsonOutput = """{"game_1":{"total_kills":131,"kills":{"Dono da Bola":2,"Assasinu Credi":3,"Oootsimo":2,"Zeh":2,"Mal":6,"Isgalamido":2}}}"""
+      val expectedJsonOutput = """{"game_1":{"total_kills":131,"kills":{"Dono da Bola":12,"Assasinu Credi":16,"Oootsimo":21,"Zeh":19,"Mal":6,"Isgalamido":17}}}"""
 
       val result = logParser.parseFile(singleGameFileName)
       assertResult(expectedJsonOutput)(result.last.simpleReport())

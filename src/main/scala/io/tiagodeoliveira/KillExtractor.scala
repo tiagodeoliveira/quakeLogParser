@@ -1,6 +1,8 @@
 package io.tiagodeoliveira
 
 /**
+  * Holds the logic to extract the kill data from a log line.
+  *
   * Created by tiagooliveira on 11/18/15.
   */
 object KillExtractor {

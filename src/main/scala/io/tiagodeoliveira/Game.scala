@@ -7,12 +7,13 @@ import org.json4s.native.JsonMethods
 import scala.collection.mutable.ArrayBuffer
 
 /**
+  * This class holds the all game representation data.
+  * It's also resposible for consolidating the game data.
+  *
   * Created by tiagooliveira on 11/18/15.
   */
 case class Player(name: String)
-
 case class Weapon(name: String)
-
 case class Kill(killer: Player, killed: Player, weapon: Weapon)
 
 class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
@@ -30,8 +31,10 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
     }))
   }
 
+  /**
+    * Returns a json object with the report with kills by mean.
+    * */
   def killsByMeanReport() = {
-
     val killByMeans = kills.filter(_.killer != MASTER_PLAYER).map(_.weapon).groupBy(identity).mapValues(_.size)
 
     var json: JObject =
@@ -44,6 +47,9 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
     JsonMethods.compact(JsonMethods.render(json))
   }
 
+  /**
+    * Returns the game object as a json, executing the data consolidation on the calculated fields.
+    * */
   def getGameAsJson() = {
     val validKills = this.getOnlyValidKills
 
@@ -59,12 +65,19 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
     json
   }
 
+  /**
+    * Returns only the valid kills, disregarding the kills when killer is MASTER_PLAYER
+    * */
   private def getOnlyValidKills = {
     kills.filter(_.killer.name != MASTER_PLAYER)
   }
 
+  /**
+    * Accumulates the amount of kills per player.
+    * Whenever player kills himself of is killed by MASTER_PLAYER, it acummulates -1 kill.
+    * */
   private def getKillsByPlayer(player: String) = {
-    val killedByAdmin: Int = this.kills.count(kill => (kill.killer.name != MASTER_PLAYER) && (kill.killed.name == player))
+    val killedByAdmin: Int = this.kills.count(kill => (kill.killer.name == MASTER_PLAYER || kill.killer.name == player) && (kill.killed.name == player))
     val kills: Int = this.kills.count(kill => kill.killer.name == player)
 
     kills - killedByAdmin

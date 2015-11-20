@@ -4,11 +4,15 @@ import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 
 /**
+  * Iterates over a log file, looking for matching patterns on each line and populating the game object.
+  *
   * Created by tiagooliveira on 11/17/15.
   */
-
 class LogParser {
 
+  /**
+    * Executes the parse on a given file and returns an array of Games
+    * */
   def parseFile(filename: String): ArrayBuffer[Game] = {
 
     val games: ArrayBuffer[Game] = new ArrayBuffer[Game]
