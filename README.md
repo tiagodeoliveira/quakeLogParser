@@ -12,8 +12,8 @@
 
 ### How to use:
 
-```
-    val games: ArrayBuffer[Game] = new LogParser().parseFile("src/test/resources/all_games.log")
+```scala
+val games: ArrayBuffer[Game] = new LogParser().parseFile("src/test/resources/all_games.log")
 ```
 
 It will return an array with all the games in the game, every game has an ID that is the order it appears on the log file.
