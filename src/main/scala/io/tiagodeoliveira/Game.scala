@@ -44,14 +44,14 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
     JsonMethods.compact(JsonMethods.render(json))
   }
 
-  private def getGameAsJson() = {
+  def getGameAsJson() = {
     val validKills = this.getOnlyValidKills
 
     var json: JObject =
       (s"game_$id" ->
         ("total_kills" -> totalKills) ~
-          ("players" -> validKills.map(_._1)) ~
-          ("kills" -> validKills.map { kill =>
+          ("players" -> validKills.flatMap(e => List(e.killed, e.killer)).groupBy(_.name).map(_._1)) ~
+          ("kills" -> validKills.groupBy(_.killer.name).map { kill =>
             ((kill._1) -> getKillsByPlayer(kill._1))
           })
         )
@@ -60,10 +60,13 @@ class Game(val id: Int, var totalKills: Int, val kills: ArrayBuffer[Kill]) {
   }
 
   private def getOnlyValidKills = {
-    kills.groupBy(_.killer.name).filter(_._1 != MASTER_PLAYER)
+    kills.filter(_.killer.name != MASTER_PLAYER)
   }
 
   private def getKillsByPlayer(player: String) = {
-    kills.count(kill => kill.killer.name == MASTER_PLAYER && kill.killed.name == player)
+    val killedByAdmin: Int = this.kills.count(kill => (kill.killer.name != MASTER_PLAYER) && (kill.killed.name == player))
+    val kills: Int = this.kills.count(kill => kill.killer.name == player)
+
+    kills - killedByAdmin
   }
 }

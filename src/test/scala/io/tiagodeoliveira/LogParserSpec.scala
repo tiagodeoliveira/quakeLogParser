@@ -42,11 +42,13 @@ class LogParserSpec extends FunSpec with BeforeAndAfter {
   }
 
   describe("A set of tests with many games on a file") {
-    it("should return the right amount of games on the log") {
+    it("should return the right amount of games on the log and the sum of all kills") {
       val expectedGamesAmount = 21
+      val expectedAmountOfKills = 1069
 
       val result = logParser.parseFile(allGamesFileName)
       assertResult(expectedGamesAmount)(result.size)
+      assertResult(expectedAmountOfKills)(result.foldLeft(0){ _ + _.totalKills})
     }
 
     it("it should return the correct kill amounts from the given games") {
